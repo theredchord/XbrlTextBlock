@@ -14,20 +14,17 @@ namespace XbrlTextBlock
 
             while (reader.Read())
             {
-                switch(reader.NodeType)
+                if (reader.Name.Contains("TextBlock") && (!reader.Name.StartsWith("us-gaap")))
                 {
-                    case XmlNodeType.Element:
-                        if(reader.Name.Contains("TextBlock") && (!reader.Name.StartsWith("us-gaap")))
-                        {
+                    switch(reader.NodeType)
+                    {
+                        case XmlNodeType.Element:
                             Console.WriteLine(reader.Name);
-                        }
-                        break;
-                    case XmlNodeType.Text:
-                        if (reader.Name.Contains("TextBlock") && (!reader.Name.StartsWith("us-gaap")))
-                        {
+                            break;
+                        case XmlNodeType.Text:
                             Console.WriteLine(reader.Value);
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
 
