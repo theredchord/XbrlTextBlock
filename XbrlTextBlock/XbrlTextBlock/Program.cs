@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using System.IO;
 
 namespace XbrlTextBlock
 {
@@ -20,12 +21,11 @@ namespace XbrlTextBlock
                     Console.WriteLine("Tag definition: " + reader.Name);
 
                     var xbrlText = reader.ReadElementContentAsString();
-                    
+
                     Console.WriteLine(" ");
                     Console.WriteLine("Tag content:");
                     Console.WriteLine("*** " + xbrlText + " ***");
                     Console.WriteLine(" ");
-                    break;
                 }
             }
 
