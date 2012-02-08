@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace XbrlTextBlock
 {
@@ -14,17 +15,17 @@ namespace XbrlTextBlock
 
             while (reader.Read())
             {
-                if (reader.Name.Contains("TextBlock") && (!reader.Name.StartsWith("us-gaap")))
+                if (reader.NodeType == XmlNodeType.Element && (!reader.Name.StartsWith("us-gaap")) && reader.Name.Contains("TextBlock"))
                 {
-                    switch(reader.NodeType)
-                    {
-                        case XmlNodeType.Element:
-                            Console.WriteLine(reader.Name);
-                            break;
-                        case XmlNodeType.Text:
-                            Console.WriteLine(reader.Value);
-                            break;
-                    }
+                    Console.WriteLine("Tag definition: " + reader.Name);
+
+                    var xbrlText = reader.ReadElementContentAsString();
+                    
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Tag content:");
+                    Console.WriteLine("*** " + xbrlText + " ***");
+                    Console.WriteLine(" ");
+                    break;
                 }
             }
 
