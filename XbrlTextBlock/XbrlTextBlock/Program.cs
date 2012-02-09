@@ -13,32 +13,34 @@ namespace XbrlTextBlock
     {
         static void Main(string[] args)
         {
-            XmlTextReader reader = new XmlTextReader("goog-20111231.xml");
+            var reader = new XmlTextReader("goog-20111231.xml");
             using (FileStream fs = File.Create("XbrlTextBlock.csv"))
-            using (TextWriter writer = new StreamWriter(fs))
-
-            while (reader.Read())
+            using (StreamWriter writer = new StreamWriter(fs))
             {
-                if (reader.NodeType == XmlNodeType.Element && (!reader.Name.StartsWith("us-gaap")) && reader.Name.Contains("TextBlock"))
+                while (reader.Read())
                 {
-                    Console.WriteLine("Tag definition: " + reader.Name);
-                    
-                    writer.WriteLine(reader.Name);
+                    if (reader.NodeType == XmlNodeType.Element && (!reader.Name.StartsWith("us-gaap")) && reader.Name.Contains("TextBlock"))
+                    {
+                        Console.WriteLine("Tag definition: " + reader.Name);
 
-                    var xbrlText = reader.ReadElementContentAsString();
-                    var textBlock = xbrlText.Replace(",", ";");
+                        writer.WriteLine(String.Format("\"{0}\",", reader.Name));
 
-                    String result = Regex.Replace(textBlock, @"<[^>]*>", String.Empty);
-                    var final = result.Replace("&#xA0;", " ");
+                        var xbrlText = reader.ReadElementContentAsString();
+                        var textBlock = xbrlText.Replace(",", ";");
 
-                    Console.WriteLine(" ");
-                    Console.WriteLine("Tag content:");
-                    Console.WriteLine("*** " + final + " ***");
-                    Console.WriteLine(" ");
+                        String result = Regex.Replace(textBlock, @"<[^>]*>", String.Empty);
+                        var final = result.Replace("&#xA0;", " ");
 
-                    writer.Write(final);
-                    break;
+                        Console.WriteLine(" ");
+                        Console.WriteLine("Tag content:");
+                        Console.WriteLine("*** " + final + " ***");
+                        Console.WriteLine(" ");
+
+                        writer.WriteLine(String.Format("\"{0}\"", final));
+                    }
                 }
+                writer.Flush();
+                writer.Close();
             }
 
             Console.WriteLine("DONE");
