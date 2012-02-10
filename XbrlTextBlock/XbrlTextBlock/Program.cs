@@ -31,11 +31,14 @@ namespace XbrlTextBlock
                         String result = Regex.Replace(textBlock, @"<[^>]*>", String.Empty);
                         var final = result.Replace("&#xA0;", " ");
 
+                        var header = final.Substring(0, 50);
+
                         Console.WriteLine(" ");
                         Console.WriteLine("Tag content:");
                         Console.WriteLine("*** " + final + " ***");
                         Console.WriteLine(" ");
 
+                        writer.WriteLine(String.Format("\"{0}\"", header));
                         writer.WriteLine(String.Format("\"{0}\"", final));
                     }
                 }
