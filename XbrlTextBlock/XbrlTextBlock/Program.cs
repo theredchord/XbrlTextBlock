@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
+using FileHelpers;
 
 namespace XbrlTextBlock
 {
@@ -13,37 +14,21 @@ namespace XbrlTextBlock
     {
         static void Main(string[] args)
         {
-            var reader = new XmlTextReader("goog-20111231.xml");
-            using (FileStream fs = File.Create("XbrlTextBlock.csv"))
-            using (StreamWriter writer = new StreamWriter(fs))
+            //Creates new FileHelperEngine to parse csv file
+            FileHelperEngine engine = new FileHelperEngine(typeof(XbrlUrl));
+            XbrlUrl[] xbrlUrls = engine.ReadFile("XbrlInstanceDocs.csv") as XbrlUrl[];
+
+            Reader reader = new Reader();
+            var fileId = 0;
+
+            //Iterate through each xml url, strip out enclosing quotations and read xml file contents for tags
+            //and writes contents to new xml file.
+            foreach (var url in xbrlUrls)
             {
-                while (reader.Read())
-                {
-                    if (reader.NodeType == XmlNodeType.Element && (!reader.Name.StartsWith("us-gaap")) && reader.Name.Contains("TextBlock"))
-                    {
-                        Console.WriteLine("Tag definition: " + reader.Name);
-
-                        writer.WriteLine(String.Format("\"{0}\",", reader.Name));
-
-                        var xbrlText = reader.ReadElementContentAsString();
-                        var textBlock = xbrlText.Replace(",", ";");
-
-                        String result = Regex.Replace(textBlock, @"<[^>]*>", String.Empty);
-                        var final = result.Replace("&#xA0;", " ");
-
-                        var header = final.Substring(0, 50);
-
-                        Console.WriteLine(" ");
-                        Console.WriteLine("Tag content:");
-                        Console.WriteLine("*** " + final + " ***");
-                        Console.WriteLine(" ");
-
-                        writer.WriteLine(String.Format("\"{0}\"", header));
-                        writer.WriteLine(String.Format("\"{0}\"", final));
-                    }
-                }
-                writer.Flush();
-                writer.Close();
+                var bareUrl = url.XmlUrl.Replace("\"", "");
+                reader.ReadXml(bareUrl, fileId);
+                fileId++;
+                break;
             }
 
             Console.WriteLine("DONE");
