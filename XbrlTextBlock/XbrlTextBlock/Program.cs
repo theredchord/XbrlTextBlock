@@ -19,16 +19,15 @@ namespace XbrlTextBlock
             XbrlUrl[] xbrlUrls = engine.ReadFile("XbrlInstanceDocs.csv") as XbrlUrl[];
 
             Reader reader = new Reader();
-            var fileId = 0;
+            string fileId = null;
 
             //Iterate through each xml url, strip out enclosing quotations and read xml file contents for tags
             //and writes contents to new xml file.
             foreach (var url in xbrlUrls)
             {
+                fileId = url.Id.Replace("\"", "").Replace("\\", "");
                 var bareUrl = url.XmlUrl.Replace("\"", "");
                 reader.ReadXml(bareUrl, fileId);
-                fileId++;
-                break;
             }
 
             Console.WriteLine("DONE");
