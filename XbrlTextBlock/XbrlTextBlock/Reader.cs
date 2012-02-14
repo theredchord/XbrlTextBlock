@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace XbrlTextBlock
 {
@@ -12,42 +13,32 @@ namespace XbrlTextBlock
     {
         public void ReadXml(string xmlFile, string fileId)
         {
-            var reader = new XmlTextReader(xmlFile);
+            var xmlDocument = XDocument.Load(xmlFile);
+            var elements = xmlDocument.Descendants();
+
+            var spacer = new AddSpaces();
 
             using (FileStream fs = File.Create("XbrlTextBlock-" + fileId + ".csv"))
             using (StreamWriter writer = new StreamWriter(fs))
             {
-                while (reader.Read())
+                foreach (var el in elements)
                 {
-                    //Checks for specific tags and writes tag contents to new file
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name.Contains("TextBlock") && (reader.Name.Contains("Acquisitions") 
-                        || reader.Name.Contains("BusinessCombination") || reader.Name.Contains("Contingencies") || reader.Name.Contains("RelatedParty")))
+                    if (el.Name.ToString().Contains("TextBlock"))
                     {
-                        if (!String.IsNullOrEmpty(reader.Name))
-                        {
-                            Console.WriteLine("Tag definition: " + reader.Name);
-                            writer.WriteLine(String.Format("\"{0}\",", reader.Name));
-                        }
+                        Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
 
-                        var xbrlText = reader.ReadElementContentAsString();
-                        var textBlock = xbrlText.Replace(",", ";");
+                        Console.WriteLine(" ");
+                        Console.WriteLine("Tag content:");
+                        Console.WriteLine("*** " + el.Value + " ***");
+                        Console.WriteLine(" ");
 
-                        String result = Regex.Replace(textBlock, @"<[^>]*>", String.Empty);
-                        var trimResult = result.Trim();
-                        var final = trimResult.Replace("&#xA0;", " ")
-                            .Replace("&#160;", " ")
-                            .Replace("&nbsp;", " ")
-                            .Replace("&#x2013;", " ");
+                        var name = spacer.AddSpacesToSentence(el.Name.LocalName);
 
-                        if (!String.IsNullOrEmpty(final))
-                        {
-                            Console.WriteLine(" ");
-                            Console.WriteLine("Tag content:");
-                            Console.WriteLine("*** " + final + " ***");
-                            Console.WriteLine(" ");
+                        var result = el.Value
+                            .Replace(",", ";")
+                            .Replace("\"", "*");
 
-                            writer.WriteLine(String.Format("\"{0}\"", final));
-                        }
+                        writer.WriteLine(String.Format("\"{0}\",\"{1}\",", name, result));
                     }
                 }
                 fs.Flush();
