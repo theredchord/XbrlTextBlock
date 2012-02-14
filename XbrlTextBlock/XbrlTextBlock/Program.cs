@@ -28,7 +28,6 @@ namespace XbrlTextBlock
                 fileId = url.Id.Replace("\"", "").Replace("\\", "");
                 var bareUrl = url.XmlUrl.Replace("\"", "");
                 reader.ReadXml(bareUrl, fileId);
-                break;
             }
 
             Console.WriteLine("DONE");

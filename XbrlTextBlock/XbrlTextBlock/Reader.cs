@@ -35,8 +35,7 @@ namespace XbrlTextBlock
                         var name = spacer.AddSpacesToSentence(el.Name.LocalName);
 
                         var result = el.Value
-                            .Replace(",", ";")
-                            .Replace("\"", "*");
+                            .Replace("\"", "'");
 
                         writer.WriteLine(String.Format("\"{0}\",\"{1}\",", name, result));
                     }
