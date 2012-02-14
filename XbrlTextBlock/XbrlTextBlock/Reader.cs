@@ -11,37 +11,35 @@ namespace XbrlTextBlock
 {
     public class Reader
     {
-        public void ReadXml(string xmlFile, string fileId)
+        public void ReadXml(string xmlFile, string fileId, FileStream fs, StreamWriter writer)
         {
             var xmlDocument = XDocument.Load(xmlFile);
             var elements = xmlDocument.Descendants();
 
             var spacer = new AddSpaces();
 
-            using (FileStream fs = File.Create("XbrlTextBlock-" + fileId + ".csv"))
-            using (StreamWriter writer = new StreamWriter(fs))
+            writer.WriteLine(String.Format("\"ID: {0}\",\"{1}\",", fileId, xmlFile));
+
+            foreach (var el in elements)
             {
-                foreach (var el in elements)
+                if (el.Name.ToString().Contains("TextBlock"))
                 {
-                    if (el.Name.ToString().Contains("TextBlock"))
-                    {
-                        Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
+                    Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
 
-                        Console.WriteLine(" ");
-                        Console.WriteLine("Tag content:");
-                        Console.WriteLine("*** " + el.Value + " ***");
-                        Console.WriteLine(" ");
+                    //Console.WriteLine(" ");
+                    //Console.WriteLine("Tag content:");
+                    //Console.WriteLine("*** " + el.Value + " ***");
+                    //Console.WriteLine(" ");
 
-                        var name = spacer.AddSpacesToSentence(el.Name.LocalName);
+                    var name = spacer.AddSpacesToSentence(el.Name.LocalName);
 
-                        var result = el.Value
-                            .Replace("\"", "'");
+                    var result = el.Value
+                        .Replace("\"", "'");
 
-                        writer.WriteLine(String.Format("\"{0}\",\"{1}\",", name, result));
-                    }
+                    writer.WriteLine(String.Format("\"{0}\",\"{1}\"", name, el.Name));
                 }
-                fs.Flush();
             }
+            writer.WriteLine(",,");
         }
     }
 }

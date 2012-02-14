@@ -21,15 +21,19 @@ namespace XbrlTextBlock
             Reader reader = new Reader();
             string fileId = null;
 
-            //Iterate through each xml url, strip out enclosing quotations and read xml file contents for tags
-            //and writes contents to new xml file.
-            foreach (var url in xbrlUrls)
+            using (FileStream fs = File.Create("XbrlTextBlocks.csv"))
+            using (StreamWriter writer = new StreamWriter(fs))
             {
-                fileId = url.Id.Replace("\"", "").Replace("\\", "");
-                var bareUrl = url.XmlUrl.Replace("\"", "");
-                reader.ReadXml(bareUrl, fileId);
+                //Iterate through each xml url, strip out enclosing quotations and read xml file contents for tags
+                //and writes contents to new xml file.
+                foreach (var url in xbrlUrls)
+                {
+                    fileId = url.Id.Replace("\"", "").Replace("\\", "");
+                    var bareUrl = url.XmlUrl.Replace("\"", "");
+                    reader.ReadXml(bareUrl, fileId, fs, writer);
+                }
             }
-
+            
             Console.WriteLine("DONE");
             Console.ReadLine();
         }
