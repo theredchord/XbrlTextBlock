@@ -16,10 +16,6 @@ namespace XbrlTextBlock
             var xmlDocument = XDocument.Load(xmlFile);
             var elements = xmlDocument.Descendants();
 
-            var spacer = new AddSpaces();
-
-            writer.WriteLine(String.Format("\"ID: {0}\",\"{1}\",", fileId, xmlFile));
-
             foreach (var el in elements)
             {
                 if (el.Name.ToString().Contains("TextBlock"))
@@ -31,12 +27,10 @@ namespace XbrlTextBlock
                     //Console.WriteLine("*** " + el.Value + " ***");
                     //Console.WriteLine(" ");
 
-                    var name = spacer.AddSpacesToSentence(el.Name.LocalName);
-
                     var result = el.Value
                         .Replace("\"", "'");
 
-                    writer.WriteLine(String.Format("\"{0}\",\"{1}\"", name, el.Name));
+                    writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Name.LocalName));
                 }
             }
             writer.WriteLine(",,");
