@@ -18,7 +18,7 @@ namespace XbrlTextBlock
 
             foreach (var el in elements)
             {
-                if (el.Name.ToString().Contains("TextBlock"))
+                if (el.Name.LocalName.ToString().Equals("IntangibleAssetsDisclosureTextBlock"))
                 {
                     Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
 
@@ -27,13 +27,21 @@ namespace XbrlTextBlock
                     //Console.WriteLine("*** " + el.Value + " ***");
                     //Console.WriteLine(" ");
 
-                    var result = el.Value
-                        .Replace("\"", "'");
+                    //FileId displayed with tag name
+                    //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Name.LocalName));
 
-                    writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Name.LocalName));
+                    //FileId displayed with tag content
+                    //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Value.ToString()));
+
+                    using (FileStream fs1 = File.Create(fileId + ".html"))
+                    using (StreamWriter writer1 = new StreamWriter(fs1))
+                    {
+                        writer1.WriteLine(el.Value.ToString());
+                    }
                 }
             }
             writer.WriteLine(",,");
+            fs.Flush();
         }
     }
 }
