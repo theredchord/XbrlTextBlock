@@ -16,27 +16,35 @@ namespace XbrlTextBlock
             var xmlDocument = XDocument.Load(xmlFile);
             var elements = xmlDocument.Descendants();
 
+            string keywords = "(Acquisition|Affiliates|Agreement|BusinessOverview|BusinessSegment|Contingencies|Litigation|Customer|Employee|Intangible|LegalMatters|LegalProceedings|MajorCustomer|Merger|Transaction|Royalty)";
+
             foreach (var el in elements)
             {
-                if (el.Name.LocalName.ToString().Equals("IntangibleAssetsDisclosureTextBlock"))
+                if (el.Name.LocalName.ToString().Contains("TextBlock"))
                 {
-                    Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
-
-                    //Console.WriteLine(" ");
-                    //Console.WriteLine("Tag content:");
-                    //Console.WriteLine("*** " + el.Value + " ***");
-                    //Console.WriteLine(" ");
-
-                    //FileId displayed with tag name
-                    //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Name.LocalName));
-
-                    //FileId displayed with tag content
-                    //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Value.ToString()));
-
-                    using (FileStream fs1 = File.Create(fileId + ".html"))
-                    using (StreamWriter writer1 = new StreamWriter(fs1))
+                    if (Regex.IsMatch(el.Name.LocalName, keywords))
                     {
-                        writer1.WriteLine(el.Value.ToString());
+                        var index = el.Name.LocalName.ToString().IndexOf("TextBlock");
+                        var keyword = el.Name.LocalName.ToString().Substring(0, index);
+
+                        Console.WriteLine("Tag definition: " + el.Name.LocalName.ToString());
+
+                        //Console.WriteLine(" ");
+                        //Console.WriteLine("Tag content:");
+                        //Console.WriteLine("*** " + el.Value + " ***");
+                        //Console.WriteLine(" ");
+
+                        //FileId displayed with tag name
+                        //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Name.LocalName));
+
+                        //FileId displayed with tag content
+                        //writer.WriteLine(String.Format("\"{0}\",\"{1}\"", fileId, el.Value.ToString()));
+
+                        using (FileStream fs1 = File.Create(fileId + "_" + keyword + ".html"))
+                        using (StreamWriter writer1 = new StreamWriter(fs1))
+                        {
+                            writer1.WriteLine(el.Value.ToString());
+                        }
                     }
                 }
             }
